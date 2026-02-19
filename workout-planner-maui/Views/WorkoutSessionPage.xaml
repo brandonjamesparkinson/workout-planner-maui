@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:workout_planner_maui.ViewModels"
+             xmlns:models="clr-namespace:workout_planner_maui.Models"
+             x:Class="workout_planner_maui.Views.WorkoutSessionPage"
+             x:DataType="vm:WorkoutSessionViewModel"
+             Title="Workout Session"
+             BackgroundColor="Black">
+
+    <ContentPage.BindingContext>
+        <vm:WorkoutSessionViewModel />
+    </ContentPage.BindingContext>
+
+    <ContentPage.Resources>
+        <Color x:Key="PrimaryAccent">#DC143C</Color> <!-- Crimson -->
+        <Color x:Key="DarkBackground">#121212</Color>
+        <Color x:Key="CardBackground">#1E1E1E</Color>
+        <Color x:Key="TextPrimary">#FFFFFF</Color>
+        <Color x:Key="TextSecondary">#B0B0B0</Color>
+
+        <!-- Style for Rep Circle Border -->
+        <Style x:Key="RepCircleStyle" TargetType="Border">
+            <Setter Property="StrokeShape" Value="RoundRectangle 25" />
+            <Setter Property="Stroke" Value="{StaticResource TextSecondary}" />
+            <Setter Property="StrokeThickness" Value="2" />
+            <Setter Property="HeightRequest" Value="40" />
+            <Setter Property="WidthRequest" Value="40" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="Margin" Value="4" />
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, *, Auto" Padding="0">
+        
+        <!-- Header -->
+        <VerticalStackLayout Grid.Row="0" BackgroundColor="{StaticResource CardBackground}" Padding="20">
+            <Label Text="{Binding CurrentWorkout.Name}" 
+                   FontSize="28" 
+                   FontAttributes="Bold" 
+                   TextColor="{StaticResource TextPrimary}"
+                   HorizontalOptions="Center" />
+            
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="10" Margin="0,10,0,0">
+                <Label Text="Warmup" VerticalOptions="Center" TextColor="{StaticResource TextSecondary}">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label" Binding="{Binding CurrentWorkout.IsWarmup}" Value="True">
+                             <Setter Property="TextColor" Value="{StaticResource PrimaryAccent}" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+                <Switch IsToggled="{Binding CurrentWorkout.IsWarmup}" OnColor="{StaticResource PrimaryAccent}" ThumbColor="{StaticResource TextPrimary}" />
+                <Label Text="Workout" VerticalOptions="Center" TextColor="{StaticResource TextSecondary}">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label" Binding="{Binding CurrentWorkout.IsWarmup}" Value="False">
+                             <Setter Property="TextColor" Value="{StaticResource PrimaryAccent}" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+
+        <!-- Main Content: Exercises List -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding CurrentWorkout.Exercises}" Margin="10">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Exercise">
+                    <Grid Padding="10" RowDefinitions="Auto, Auto" ColumnDefinitions="*, Auto" Margin="0,0,0,15">
+                        
+                        <!-- Exercise Info -->
+                        <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                            <Label Text="{Binding Name}" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                            <HorizontalStackLayout Spacing="5">
+                                <Label Text="{Binding TargetSets}" TextColor="{StaticResource TextSecondary}" />
+                                <Label Text="x" TextColor="{StaticResource TextSecondary}" />
+                                <Label Text="{Binding TargetReps}" TextColor="{StaticResource TextSecondary}" />
+                                <Label Text="{Binding Weight, StringFormat='{0}lb'}" TextColor="{StaticResource TextSecondary}" Margin="10,0,0,0"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+
+                        <!-- Rep Circles -->
+                        <HorizontalStackLayout Grid.Row="1" Grid.ColumnSpan="2" BindableLayout.ItemsSource="{Binding Sets}" Margin="0,10,0,0" HorizontalOptions="Center">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:ExerciseSet">
+                                    <Border Style="{StaticResource RepCircleStyle}">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding CycleRepsCommand}" />
+                                        </Border.GestureRecognizers>
+                                        <Border.Triggers>
+                                            <!-- Completed State -->
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryAccent}" />
+                                                <Setter Property="Stroke" Value="{StaticResource PrimaryAccent}" />
+                                            </DataTrigger>
+                                            <!-- Failed State (0 Reps) -->
+                                            <DataTrigger TargetType="Border" Binding="{Binding CompletedReps}" Value="0">
+                                                <Setter Property="BackgroundColor" Value="DarkRed" /> 
+                                                <Setter Property="Stroke" Value="DarkRed" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        
+                                        <Label Text="{Binding CompletedReps, TargetNullValue=''}" 
+                                               TextColor="{StaticResource TextPrimary}" 
+                                               HorizontalOptions="Center" 
+                                               VerticalOptions="Center" 
+                                               FontAttributes="Bold"
+                                               FontSize="16"/>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                        
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Footer: Rest Timer -->
+        <Grid Grid.Row="2" BackgroundColor="{StaticResource CardBackground}" HeightRequest="80">
+             <Grid.GestureRecognizers>
+                <!-- Tap logic for timer start/stop -->
+                <TapGestureRecognizer Command="{Binding StartTimerCommand}" />
+            </Grid.GestureRecognizers>
+            
+            <!-- Not Running State -->
+            <Label Text="Tap to Start Rest Timer" 
+                   TextColor="{StaticResource TextSecondary}" 
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Center"
+                   FontSize="18">
+                   <Label.Triggers>
+                        <DataTrigger TargetType="Label" Binding="{Binding IsTimerRunning}" Value="True">
+                            <Setter Property="IsVisible" Value="False" />
+                        </DataTrigger>
+                   </Label.Triggers>
+            </Label>
+            
+            <!-- Running State -->
+            <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" IsVisible="False">
+                 <HorizontalStackLayout.Triggers>
+                      <DataTrigger TargetType="HorizontalStackLayout" Binding="{Binding IsTimerRunning}" Value="True">
+                            <Setter Property="IsVisible" Value="True" />
+                       </DataTrigger>
+                 </HorizontalStackLayout.Triggers>
+                 <Label Text="Resting..." TextColor="{StaticResource TextSecondary}" Margin="0,0,10,0" VerticalOptions="Center" FontSize="18"/>
+                 <Label Text="{Binding TimerDisplay}" TextColor="{StaticResource PrimaryAccent}" FontSize="28" FontAttributes="Bold" VerticalOptions="Center"/>
+            </HorizontalStackLayout>
+        </Grid>
+
+    </Grid>
+
+</ContentPage>

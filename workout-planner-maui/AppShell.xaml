@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="workout_planner_maui.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:workout_planner_maui"
+    xmlns:views="clr-namespace:workout_planner_maui.Views"
+    Title="workout_planner_maui">
+
+    <ShellContent
+        Title="Workout"
+        ContentTemplate="{DataTemplate views:WorkoutSessionPage}"
+        Route="WorkoutSessionPage" />
+
+</Shell>
