@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:workout_planner_maui.ViewModels"
+             xmlns:models="clr-namespace:workout_planner_maui.Models.IronLog"
+             x:Class="workout_planner_maui.Views.ExerciseSelectionPage"
+             BackgroundColor="{StaticResource IronBlack}"
+             Title="ADD IRON">
+
+    <Grid RowDefinitions="Auto, *">
+        <!-- Header -->
+        <Label Text="[ SELECT EXERCISE ]" 
+               TextColor="{StaticResource IronWhite}"
+               FontFamily="Monospace"
+               FontSize="20"
+               HorizontalOptions="Center"
+               Margin="0,20"/>
+
+        <!-- List -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Exercises}" Margin="20">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:ExerciseDefinition">
+                    <Border Stroke="{StaticResource IronWhite}"
+                            StrokeThickness="1"
+                            BackgroundColor="{StaticResource IronBlack}"
+                            Margin="0,0,0,10"
+                            Padding="15">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ExerciseSelectionViewModel}}, Path=SelectExerciseCommand}"
+                                                  CommandParameter="{Binding .}"/>
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Text="{Binding Name}" 
+                                   TextColor="{StaticResource IronWhite}"
+                                   FontFamily="Monospace"
+                                   FontSize="16"
+                                   VerticalOptions="Center"/>
+                            <Label Grid.Column="1" 
+                                   Text="{Binding MuscleGroup}" 
+                                   TextColor="{StaticResource IronOrange}"
+                                   FontFamily="Monospace"
+                                   FontSize="12"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        
+        <!-- Cancel Button (Overlay or specific region) -->
+        <Button Grid.Row="1" 
+                Text="CANCEL" 
+                Command="{Binding CancelCommand}"
+                BackgroundColor="{StaticResource IronOrange}"
+                TextColor="{StaticResource IronBlack}"
+                FontFamily="Monospace"
+                VerticalOptions="End"
+                Margin="20"/>
+    </Grid>
+</ContentPage>

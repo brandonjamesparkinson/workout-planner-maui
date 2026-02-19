@@ -12,6 +12,10 @@ public partial class IronSetViewModel : ObservableObject
     private readonly string _exerciseName;
     private readonly DatabaseService _dbService;
 
+    // Event to notify parent for volume calc
+    // bool = isCompleted (true = add volume, false = subtract/ignore)
+    public event EventHandler<bool> SetCompleted;
+
     [ObservableProperty]
     private string displayValue;
 
@@ -29,6 +33,10 @@ public partial class IronSetViewModel : ObservableObject
     // 2: Failed (-1)
     // 3: Failed (0)
     private int _state = 0;
+
+    public bool IsCompletedState => _state == 1; // For checking status later
+    public double Weight => _weight;
+    public int TargetReps => _targetReps;
 
     public IronSetViewModel(int targetReps, double weight, string exerciseName, DatabaseService dbService)
     {
@@ -57,26 +65,32 @@ public partial class IronSetViewModel : ObservableObject
         {
             case 0: // Reset
                 ResetVisuals();
+                SetCompleted?.Invoke(this, false); // Remove volume if we reset? Logic is complex, handled naively by VM for now
                 break;
 
             case 1: // Completed (Target)
                 DisplayValue = _targetReps.ToString();
-                BackgroundColor = Colors.White; // "Completed: White background..."
+                BackgroundColor = Colors.White; 
                 BorderColor = Colors.White;
-                TextColor = Colors.Black;       // "...black text."
+                TextColor = Colors.Black;
 
                 // Haptics
                 try { HapticFeedback.Default.Perform(HapticFeedbackType.LongPress); } catch { }
 
-                // Log
-                await LogSet(_targetReps);
+                // Notify completion
+                SetCompleted?.Invoke(this, true);
+
+                // We are NOT logging to DB here in Phase 2, relying on "Finish Workout".
+                // But Phase 1 code did. Removing immediate log to avoid double counting or confusion.
+                // await LogSet(_targetReps); 
                 break;
 
             case 2: // Failed (-1)
                 DisplayValue = "-1";
-                BackgroundColor = Colors.Black;     // "Failed: Black background..."
-                BorderColor = Color.FromArgb("#FF4F00"); // "...Orange border..."
-                TextColor = Color.FromArgb("#FF4F00");   // "...Orange text."
+                BackgroundColor = Colors.Black;     
+                BorderColor = Color.FromArgb("#FF4F00");
+                TextColor = Color.FromArgb("#FF4F00");
+                SetCompleted?.Invoke(this, false); // Changing from Complete to Fail subtacts? 
                 break;
 
             case 3: // Failed (0)
@@ -96,7 +110,6 @@ public partial class IronSetViewModel : ObservableObject
             Weight = _weight,
             Reps = reps,
             Timestamp = DateTime.UtcNow,
-            // Defaults for now
             RPE = 0,
             IsPersonalRecord = false
         });

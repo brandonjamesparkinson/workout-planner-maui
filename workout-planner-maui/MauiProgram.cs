@@ -23,6 +23,11 @@ namespace workout_planner_maui
 
             // Register Pages
             builder.Services.AddTransient<Views.WorkoutPage>();
+            builder.Services.AddTransient<Views.ExerciseSelectionPage>();
+
+            // Register ViewModels
+            builder.Services.AddTransient<ViewModels.WorkoutViewModel>();
+            builder.Services.AddTransient<ViewModels.ExerciseSelectionViewModel>();
 
 #if DEBUG
     		builder.Logging.AddDebug();

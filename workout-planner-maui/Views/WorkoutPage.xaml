@@ -14,24 +14,65 @@
         </Style>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto, *, Auto" Padding="20">
-        <!-- Header -->
-        <Label Text="[ IRON LOG ] // WORKOUT_A" 
+    <Grid RowDefinitions="Auto, *, Auto, Auto, Auto" Padding="20">
+        <!-- Header: Status Bar -->
+        <Border Stroke="{StaticResource IronWhite}" 
+                StrokeThickness="0,0,0,2" 
+                BackgroundColor="Transparent"
+                Padding="0,0,0,10"
+                Margin="0,0,0,10">
+            <Grid ColumnDefinitions="*, *, *">
+                <VerticalStackLayout>
+                    <Label Text="STATUS" FontSize="10" TextColor="{StaticResource IronOrange}" FontFamily="Monospace"/>
+                    <Label Text="{Binding Status}" Style="{StaticResource BrutalistLabel}" FontSize="14"/>
+                </VerticalStackLayout>
+                
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
+                    <Label Text="TIME" FontSize="10" TextColor="{StaticResource IronOrange}" FontFamily="Monospace"/>
+                    <Label Text="{Binding SessionTimeDisplay}" Style="{StaticResource BrutalistLabel}" FontSize="14"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="2" HorizontalOptions="End">
+                    <Label Text="VOL (LBS)" FontSize="10" TextColor="{StaticResource IronOrange}" FontFamily="Monospace"/>
+                    <Label Text="{Binding TotalVolume}" Style="{StaticResource BrutalistLabel}" FontSize="14" HorizontalOptions="End"/>
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- Empty State -->
+        <Label Grid.Row="1" 
+               Text="[ NO IRON DETECTED ]&#10;ADD EXERCISE TO BEGIN" 
                Style="{StaticResource BrutalistLabel}"
-               FontSize="24"
+               TextColor="{StaticResource TextSecondary}"
+               FontSize="18"
                HorizontalOptions="Center"
-               Margin="0,20,0,20"/>
+               VerticalOptions="Center"
+               HorizontalTextAlignment="Center"
+               IsVisible="{Binding IsEmptyStateVisible}"/>
 
         <!-- Exercise List -->
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Exercises}">
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Exercises}" IsVisible="{Binding IsEmptyStateVisible, Converter={StaticResource InvertedBoolConverter}}">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="vm:IronExerciseViewModel">
                     <VerticalStackLayout Spacing="10" Margin="0,0,0,20">
                         <!-- Exercise Header -->
-                        <Label Text="{Binding Name}" 
-                               Style="{StaticResource BrutalistLabel}" 
-                               FontSize="18"
-                               Margin="0,0,0,5"/>
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Text="{Binding Name}" 
+                                   Style="{StaticResource BrutalistLabel}" 
+                                   FontSize="18"
+                                   VerticalOptions="Center"/>
+                            
+                            <!-- Delete Button -->
+                            <Button Text="[X]" 
+                                    Command="{Binding RemoveCommand}"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{StaticResource IronOrange}"
+                                    FontFamily="Monospace"
+                                    FontSize="16"
+                                    Padding="0"
+                                    HeightRequest="30"
+                                    WidthRequest="40"/>
+                        </Grid>
                         
                         <!-- Sets (Rep Blocks) -->
                         <CollectionView ItemsSource="{Binding Sets}">
@@ -61,34 +102,64 @@
                         </CollectionView>
                         
                         <!-- Separator -->
-                        <BoxView HeightRequest="2" Color="{StaticResource IronWhite}" Margin="0,10,0,0"/>
+                        <BoxView HeightRequest="1" Color="{StaticResource Gray600}" Margin="0,15,0,0"/>
                     </VerticalStackLayout>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <!-- Footer / Rest Timer -->
-        <Border Grid.Row="2" 
+        <!-- Rest Timer -->
+        <Border Grid.Row="2"
                 Stroke="{StaticResource IronWhite}" 
                 StrokeThickness="2" 
                 BackgroundColor="{StaticResource IronBlack}"
-                Padding="20"
-                Margin="0,20,0,0">
+                Padding="10"
+                Margin="0,0,0,10">
             <Border.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding StartRestTimerCommand}"/>
             </Border.GestureRecognizers>
             <VerticalStackLayout>
                 <Label Text="REST TIMER" 
                        Style="{StaticResource BrutalistLabel}"
-                       FontSize="14"
+                       FontSize="12"
                        HorizontalOptions="Center"/>
                 <Label Text="{Binding RestTimerDisplay}"
                        TextColor="{Binding RestTimerColor}"
                        FontFamily="Monospace"
-                       FontSize="48"
+                       FontSize="32"
                        HorizontalOptions="Center"
                        FontAttributes="Bold"/>
             </VerticalStackLayout>
         </Border>
+
+        <!-- Actions -->
+        <Button Grid.Row="3"
+                Text="[ ADD EXERCISE ]"
+                Command="{Binding AddExerciseCommand}"
+                BackgroundColor="{StaticResource IronWhite}"
+                TextColor="{StaticResource IronBlack}"
+                FontFamily="Monospace"
+                FontSize="16"
+                CornerRadius="0"
+                Margin="0,0,0,10"/>
+
+        <Button Grid.Row="4"
+                Text="[ FINISH WORKOUT ]"
+                Command="{Binding FinishWorkoutCommand}"
+                BackgroundColor="{StaticResource IronOrange}"
+                TextColor="{StaticResource IronBlack}"
+                FontFamily="Monospace"
+                FontSize="16"
+                CornerRadius="0"
+                Margin="0,0,0,10"/>
+
+        <!-- Rest Timer Overlay or Footer integration? 
+             User asked for "The 'Rest Timer' should be a large, stark digital readout at the bottom"
+             But now we have Finish buttons. 
+             Let's put the Timer at the VERY bottom or overlay.
+             Actually, let's put it ABOVE the buttons if active, or just make it the prominent footer and buttons above?
+             Let's stack them. Buttons are for action. Timer is state.
+             Let's put Timer between List and Buttons.
+        -->
     </Grid>
 </ContentPage>
