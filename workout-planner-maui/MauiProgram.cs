@@ -15,10 +15,19 @@ namespace workout_planner_maui
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+// Register Services
+            builder.Services.AddSingleton<Services.DatabaseService>();
+
+            // Register ViewModels
+            builder.Services.AddTransient<ViewModels.WorkoutViewModel>();
+
+            // Register Pages
+            builder.Services.AddTransient<Views.WorkoutPage>();
+
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
-
+            
             return builder.Build();
         }
     }

@@ -40,7 +40,7 @@
             <Label Text="{Binding CurrentWorkout.Name}" 
                    Style="{StaticResource Headline}"
                    FontSize="28" 
-                   FontAttributes="SemiBold" 
+                   FontAttributes="Bold" 
                    HorizontalOptions="Center" />
             
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="16" Margin="0,12,0,0">
@@ -73,7 +73,7 @@
                                 
                                 <!-- Exercise Info -->
                                 <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="4">
-                                    <Label Text="{Binding Name}" FontSize="18" FontAttributes="SemiBold" TextColor="{StaticResource TextPrimary}" />
+                                    <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
                                     <HorizontalStackLayout Spacing="6">
                                         <Label Text="{Binding TargetSets}" TextColor="{StaticResource TextSecondary}" FontSize="14" />
                                         <Label Text="x" TextColor="{StaticResource TextSecondary}" FontSize="14" />
@@ -147,7 +147,7 @@
                    HorizontalOptions="Center" 
                    VerticalOptions="Center"
                    FontSize="16"
-                   FontAttributes="SemiBold">
+                   FontAttributes="Bold">
                    <Label.Triggers>
                         <DataTrigger TargetType="Label" Binding="{Binding IsTimerRunning}" Value="True">
                             <Setter Property="IsVisible" Value="False" />

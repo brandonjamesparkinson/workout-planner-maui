@@ -13,10 +13,19 @@
     <Color x:Key="TextPrimary">#FFFFFF</Color>
     <Color x:Key="TextSecondary">#B0B0B0</Color>
 
+    <!-- IRON LOG Palette -->
+    <Color x:Key="IronBlack">#000000</Color>
+    <Color x:Key="IronWhite">#FFFFFF</Color>
+    <Color x:Key="IronOrange">#FF4F00</Color>
+
     <!-- Keep standard colors for compatibility if needed, but override primary -->
-    <Color x:Key="Primary">#FF3B30</Color> 
+    <Color x:Key="Primary">#FF3B30</Color>
+    <Color x:Key="PrimaryDark">#D32F2F</Color>
+    <Color x:Key="PrimaryDarkText">#FFFFFF</Color> 
     <Color x:Key="Secondary">#B0B0B0</Color>
+
     <Color x:Key="Tertiary">#1E1E1E</Color>
+    <Color x:Key="MidnightBlue">#191970</Color>
     
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">#121212</Color> <!-- Remapped standard Black to our background for system themes if they use it -->

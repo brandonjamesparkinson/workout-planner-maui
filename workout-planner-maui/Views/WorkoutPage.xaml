@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:workout_planner_maui.ViewModels"
+             x:Class="workout_planner_maui.Views.WorkoutPage"
+             BackgroundColor="{StaticResource IronBlack}"
+             Shell.NavBarIsVisible="False">
+
+    <ContentPage.Resources>
+        <Style x:Key="BrutalistLabel" TargetType="Label">
+            <Setter Property="FontFamily" Value="Monospace"/>
+            <Setter Property="TextColor" Value="{StaticResource IronWhite}"/>
+            <Setter Property="TextTransform" Value="Uppercase"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, *, Auto" Padding="20">
+        <!-- Header -->
+        <Label Text="[ IRON LOG ] // WORKOUT_A" 
+               Style="{StaticResource BrutalistLabel}"
+               FontSize="24"
+               HorizontalOptions="Center"
+               Margin="0,20,0,20"/>
+
+        <!-- Exercise List -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Exercises}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:IronExerciseViewModel">
+                    <VerticalStackLayout Spacing="10" Margin="0,0,0,20">
+                        <!-- Exercise Header -->
+                        <Label Text="{Binding Name}" 
+                               Style="{StaticResource BrutalistLabel}" 
+                               FontSize="18"
+                               Margin="0,0,0,5"/>
+                        
+                        <!-- Sets (Rep Blocks) -->
+                        <CollectionView ItemsSource="{Binding Sets}">
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="vm:IronSetViewModel">
+                                    <Border Stroke="{Binding BorderColor}"
+                                            StrokeThickness="2"
+                                            BackgroundColor="{Binding BackgroundColor}"
+                                            HeightRequest="55"
+                                            WidthRequest="55"
+                                            StrokeShape="Rectangle">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding TapCommand}"/>
+                                        </Border.GestureRecognizers>
+                                        <Label Text="{Binding DisplayValue}"
+                                               TextColor="{Binding TextColor}"
+                                               FontFamily="Monospace"
+                                               FontSize="20"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center"/>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                        
+                        <!-- Separator -->
+                        <BoxView HeightRequest="2" Color="{StaticResource IronWhite}" Margin="0,10,0,0"/>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Footer / Rest Timer -->
+        <Border Grid.Row="2" 
+                Stroke="{StaticResource IronWhite}" 
+                StrokeThickness="2" 
+                BackgroundColor="{StaticResource IronBlack}"
+                Padding="20"
+                Margin="0,20,0,0">
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding StartRestTimerCommand}"/>
+            </Border.GestureRecognizers>
+            <VerticalStackLayout>
+                <Label Text="REST TIMER" 
+                       Style="{StaticResource BrutalistLabel}"
+                       FontSize="14"
+                       HorizontalOptions="Center"/>
+                <Label Text="{Binding RestTimerDisplay}"
+                       TextColor="{Binding RestTimerColor}"
+                       FontFamily="Monospace"
+                       FontSize="48"
+                       HorizontalOptions="Center"
+                       FontAttributes="Bold"/>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentPage>
